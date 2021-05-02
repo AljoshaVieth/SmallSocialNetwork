@@ -10,5 +10,8 @@ The code is created during a course of my Computer Science in Media studies at F
 * Android
 * Docker
 
-Gradually, the code will get extended. All progress will get documented in the wiki in a kind of blog form.
+Gradually, the code will get extended. All progress will get documented in the [**wiki**](../../wiki)
+ in a kind of blog form.
 The end result should be a functioning prototype, but nothing more.
+
+
