@@ -10,6 +10,8 @@ The code is created during a course of my Computer Science in Media studies at F
 * MongoDB
 * Android
 * Docker
+* TypeScript
+* HTML & CSS
 
 Gradually, the code will get extended. All progress will get documented in the [**wiki**](../../wiki)
  in a kind of blog form.
