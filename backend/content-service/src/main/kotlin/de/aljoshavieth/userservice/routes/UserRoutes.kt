@@ -18,36 +18,46 @@ fun Route.userRouting() {
     val mongoManager = MongoManager.getInstance();
     route("/user") {
         get {
-            // TODO Check if any users exist
-            //call.respondText("No users found", status = HttpStatusCode.NotFound)
-            val user = mongoManager.getUserFromMongoDB();
-            call.respond(user)
+            val users = mongoManager.usersFromMongoDB;
+            if (users.size < 1) {
+                call.respondText("No users found", status = HttpStatusCode.NotFound)
+            } else {
+                call.respond(users)
+            }
         }
         get("{id}") {
             val id = call.parameters["id"] ?: return@get call.respondText(
                 "Missing or malformed id",
                 status = HttpStatusCode.BadRequest
             )
-            // TODO Check if user exists
-            //call.respondText("User not found", status = HttpStatusCode.NotFound)
+            val user = mongoManager.getUsersFromMongoDB(id);
+            if (user == null) {
+                call.respondText("User not found", status = HttpStatusCode.NotFound)
+            } else {
+                call.respond(user)
+            }
 
-            val user = mongoManager.getUserFromMongoDB(id);
-            call.respond(user)
         }
         post {
-            val user = call.receive<User>()
-            val mongoManager = MongoManager.getInstance();
-            mongoManager.insertInMongoDB(user);
-            userStorage.add(user)
-            call.respondText("User stored correctly", status = HttpStatusCode.Created)
+            try {
+                val user = call.receive<User>()
+                val manager = MongoManager.getInstance();
+                manager.insertInMongoDB(user);
+                userStorage.add(user)
+                call.respondText("User stored correctly", status = HttpStatusCode.Created)
+            } catch (e: Exception) {
+                call.respondText(
+                    "User format is not valid, check your request body!",
+                    status = HttpStatusCode.BadRequest
+                )
+            }
         }
         delete("{id}") {
-            //TODO migrate from storage to mongodb
-            val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
-            if (userStorage.removeIf { it.id == id }) {
+            val manager = MongoManager.getInstance();
+            if (manager.removeFromMongoDB(call.parameters["id"])) {
                 call.respondText("User removed correctly", status = HttpStatusCode.Accepted)
             } else {
-                call.respondText("Not Found", status = HttpStatusCode.NotFound)
+                call.respondText("User not found, hence cannot be deleted!", status = HttpStatusCode.NotFound)
             }
         }
     }

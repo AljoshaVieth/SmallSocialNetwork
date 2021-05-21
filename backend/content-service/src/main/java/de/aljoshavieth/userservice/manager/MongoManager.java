@@ -22,7 +22,7 @@ public class MongoManager {
     private DB database;
     private DBCollection collection;
     private Properties properties;
-    private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 
     public static MongoManager getInstance() {
@@ -82,14 +82,19 @@ public class MongoManager {
         logger.info("Inserted user " + user.getEmail() + " to " + properties.get("db.collectionname"));
     }
 
-    public User getUserFromMongoDB(String id) {
+    public boolean removeFromMongoDB(String id) {
+        WriteResult writeResult = collection.remove(new BasicDBObject("_id", id));
+        return writeResult.getN() == 1;
+    }
+
+    public User getUsersFromMongoDB(String id) {
         DBObject query = new BasicDBObject("_id", id);
         DBCursor cursor = collection.find(query);
         DBObject user = cursor.one();
-        return new User(id, (String) user.get("firstName"), (String) user.get("lastName"), (String) user.get("email"));
+        return user == null ? null : new User(id, (String) user.get("firstName"), (String) user.get("lastName"), (String) user.get("email"));
     }
 
-    public ArrayList<User> getUserFromMongoDB() {
+    public ArrayList<User> getUsersFromMongoDB() {
         ArrayList<User> users = new ArrayList<>();
         DBCursor cursor = collection.find();
         while (cursor.hasNext()) {
