@@ -19,7 +19,6 @@ public class MongoManager {
     private MongoManager() {
     }
 
-    private DB database;
     private String userCollectionName;
     private String postCollectionName;
     private DBCollection userCollection;
@@ -51,7 +50,7 @@ public class MongoManager {
     boolean loadProperties() {
         boolean success = false;
         properties = new Properties();
-        BufferedInputStream stream = null;
+        BufferedInputStream stream;
         try {
             stream = new BufferedInputStream(new FileInputStream("config.properties"));
             properties.load(stream);
@@ -72,7 +71,7 @@ public class MongoManager {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        database = mongoClient.getDB(String.valueOf(properties.get("db.databasename")));
+        DB database = mongoClient.getDB(String.valueOf(properties.get("db.databasename")));
         try {
             database.command("ping");
             userCollection = database.getCollection(userCollectionName);
