@@ -1,6 +1,8 @@
 package de.aljoshavieth.userservice.manager;
 
 import com.mongodb.*;
+import de.aljoshavieth.userservice.models.Comment;
+import de.aljoshavieth.userservice.models.Post;
 import de.aljoshavieth.userservice.models.User;
 
 import java.io.BufferedInputStream;
@@ -20,7 +22,10 @@ public class MongoManager {
     }
 
     private DB database;
-    private DBCollection collection;
+    private String userCollectionName;
+    private String postCollectionName;
+    private DBCollection userCollection;
+    private DBCollection postCollection;
     private Properties properties;
     private final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -58,6 +63,8 @@ public class MongoManager {
             logger.log(Level.SEVERE, "An error occurred while loading properties file!");
             logger.log(Level.SEVERE, e.getMessage());
         }
+        userCollectionName = String.valueOf(properties.get("db.usercollectionname"));
+        postCollectionName = String.valueOf(properties.get("db.postcollectionname"));
         return success;
     }
 
@@ -70,39 +77,68 @@ public class MongoManager {
         database = mongoClient.getDB(String.valueOf(properties.get("db.databasename")));
         try {
             database.command("ping");
-            collection = database.getCollection(String.valueOf(properties.get("db.collectionname")));
+            userCollection = database.getCollection(userCollectionName);
+            postCollection = database.getCollection(postCollectionName);
             logger.info("Successfully connected to MongoDB at " + properties.get("db.host"));
         } catch (MongoException e) {
             logger.log(Level.SEVERE, "Could not connect to mongodb... please check your properties file and restart!");
         }
     }
 
-    public void insertInMongoDB(User user) {
-        collection.insert(UserAdapter.toDBObject(user));
-        logger.info("Inserted user " + user.getEmail() + " to " + properties.get("db.collectionname"));
+    public void insertUserToMongoDB(User user) {
+        userCollection.insert(UserAdapter.toDBObject(user));
+        logger.info("Inserted user " + user.getEmail() + " to " + userCollectionName);
     }
 
-    public boolean removeFromMongoDB(String id) {
-        WriteResult writeResult = collection.remove(new BasicDBObject("_id", id));
+    public void insertPostToMongoDB(Post post) {
+        postCollection.insert(PostAdapter.toDBObject(post));
+        logger.info("Inserted post from " + post.getAuthor().getEmail() + " with id= " + post.getId() + " into " + postCollectionName);
+    }
+
+    public boolean removeUserFromMongoDB(String id) {
+        WriteResult writeResult = userCollection.remove(new BasicDBObject("_id", id));
         return writeResult.getN() == 1;
     }
 
-    public User getUsersFromMongoDB(String id) {
+    public boolean removePostFromMongoDB(String id) {
+        WriteResult writeResult = postCollection.remove(new BasicDBObject("_id", id));
+        return writeResult.getN() == 1;
+    }
+
+    public User getUserFromMongoDB(String id) {
         DBObject query = new BasicDBObject("_id", id);
-        DBCursor cursor = collection.find(query);
+        DBCursor cursor = userCollection.find(query);
         DBObject user = cursor.one();
         return user == null ? null : new User(id, (String) user.get("firstName"), (String) user.get("lastName"), (String) user.get("email"));
     }
 
+    public Post getPostFromMongoDB(String id) {
+        DBObject query = new BasicDBObject("_id", id);
+        DBCursor cursor = postCollection.find(query);
+        DBObject post = cursor.one();
+        return post == null ? null : new Post(id, (String) post.get("content"), (Comment[]) post.get("comments"), (User) post.get("author"));
+    }
+
     public ArrayList<User> getUsersFromMongoDB() {
         ArrayList<User> users = new ArrayList<>();
-        DBCursor cursor = collection.find();
+        DBCursor cursor = userCollection.find();
         while (cursor.hasNext()) {
             DBObject userDBObject = cursor.next();
             User user = new User((String) userDBObject.get("_id"), (String) userDBObject.get("firstName"), (String) userDBObject.get("lastName"), (String) userDBObject.get("email"));
             users.add(user);
         }
         return users;
+    }
+
+    public ArrayList<Post> getPostsFromMongoDB() {
+        ArrayList<Post> posts = new ArrayList<>();
+        DBCursor cursor = postCollection.find();
+        while (cursor.hasNext()) {
+            DBObject postDBObject = cursor.next();
+            Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"));
+            posts.add(post);
+        }
+        return posts;
     }
 
 

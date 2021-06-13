@@ -1,6 +1,5 @@
-import de.aljoshavieth.userservice.models.User
-import de.aljoshavieth.userservice.models.userStorage
 import de.aljoshavieth.userservice.manager.MongoManager
+import de.aljoshavieth.userservice.models.User
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -30,7 +29,7 @@ fun Route.userRouting() {
                 "Missing or malformed id",
                 status = HttpStatusCode.BadRequest
             )
-            val user = mongoManager.getUsersFromMongoDB(id);
+            val user = mongoManager.getUserFromMongoDB(id);
             if (user == null) {
                 call.respondText("User not found", status = HttpStatusCode.NotFound)
             } else {
@@ -42,8 +41,7 @@ fun Route.userRouting() {
             try {
                 val user = call.receive<User>()
                 val manager = MongoManager.getInstance();
-                manager.insertInMongoDB(user);
-                userStorage.add(user)
+                manager.insertUserToMongoDB(user);
                 call.respondText("User stored correctly", status = HttpStatusCode.Created)
             } catch (e: Exception) {
                 call.respondText(
@@ -54,7 +52,7 @@ fun Route.userRouting() {
         }
         delete("{id}") {
             val manager = MongoManager.getInstance();
-            if (manager.removeFromMongoDB(call.parameters["id"])) {
+            if (manager.removeUserFromMongoDB(call.parameters["id"])) {
                 call.respondText("User removed correctly", status = HttpStatusCode.Accepted)
             } else {
                 call.respondText("User not found, hence cannot be deleted!", status = HttpStatusCode.NotFound)
