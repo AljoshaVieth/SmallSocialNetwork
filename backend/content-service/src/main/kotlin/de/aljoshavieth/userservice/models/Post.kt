@@ -3,7 +3,7 @@ package de.aljoshavieth.userservice.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Post(val id: String, val content: String, val comments: Array<Comment>, val author: User) {
+data class Post(val id: String, val content: String, val comments: Array<Comment>, val author: User) : ContentServiceModel{
     // auto generated...
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

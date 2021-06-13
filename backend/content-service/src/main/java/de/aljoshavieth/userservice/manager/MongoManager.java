@@ -1,9 +1,7 @@
 package de.aljoshavieth.userservice.manager;
 
 import com.mongodb.*;
-import de.aljoshavieth.userservice.models.Comment;
-import de.aljoshavieth.userservice.models.Post;
-import de.aljoshavieth.userservice.models.User;
+import de.aljoshavieth.userservice.models.*;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -85,23 +83,42 @@ public class MongoManager {
         }
     }
 
+    // For better method naming...
     public void insertUserToMongoDB(User user) {
-        userCollection.insert(UserAdapter.toDBObject(user));
-        logger.info("Inserted user " + user.getEmail() + " to " + userCollectionName);
+        insertToMongoDB(user);
     }
 
     public void insertPostToMongoDB(Post post) {
-        postCollection.insert(PostAdapter.toDBObject(post));
-        logger.info("Inserted post from " + post.getAuthor().getEmail() + " with id= " + post.getId() + " into " + postCollectionName);
+        insertToMongoDB(post);
+    }
+
+    private void insertToMongoDB(ContentServiceModel object) {
+        if (object instanceof User) {
+            User user = (User) object;
+            userCollection.insert(UserAdapter.toDBObject(user));
+            logger.info("Inserted user " + user.getEmail() + " to " + userCollectionName);
+        } else {
+            Post post = (Post) object;
+            postCollection.insert(PostAdapter.toDBObject(post));
+            logger.info("Inserted post from " + post.getAuthor().getEmail() + " with id= " + post.getId() + " into " + postCollectionName);
+        }
     }
 
     public boolean removeUserFromMongoDB(String id) {
-        WriteResult writeResult = userCollection.remove(new BasicDBObject("_id", id));
-        return writeResult.getN() == 1;
+        return removeFromMongoDB(ContentServiceModelType.USER, id);
     }
 
     public boolean removePostFromMongoDB(String id) {
-        WriteResult writeResult = postCollection.remove(new BasicDBObject("_id", id));
+        return removeFromMongoDB(ContentServiceModelType.POST, id);
+    }
+
+    private boolean removeFromMongoDB(ContentServiceModelType type, String id) {
+        WriteResult writeResult;
+        if (type == ContentServiceModelType.USER) {
+            writeResult = userCollection.remove(new BasicDBObject("_id", id));
+        } else {
+            writeResult = postCollection.remove(new BasicDBObject("_id", id));
+        }
         return writeResult.getN() == 1;
     }
 
