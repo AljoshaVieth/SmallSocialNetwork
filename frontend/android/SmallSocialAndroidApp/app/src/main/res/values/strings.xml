@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SmallSocialAndroidApp</string>
+    <string name="apiBaseUrl">http://localhost/</string>
 </resources>
