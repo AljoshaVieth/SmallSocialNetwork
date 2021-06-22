@@ -8,6 +8,7 @@ public class PostAdapter {
     public static DBObject toDBObject(Post post) {
         return new BasicDBObject("_id", post.getId())
                 .append("content", post.getContent())
+                .append("color", post.getColor())
                 .append("comments", post.getComments())
                 .append("user", post.getAuthor());
     }

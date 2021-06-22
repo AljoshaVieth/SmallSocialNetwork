@@ -132,7 +132,7 @@ public class MongoManager {
         DBObject query = new BasicDBObject("_id", id);
         DBCursor cursor = postCollection.find(query);
         DBObject post = cursor.one();
-        return post == null ? null : new Post(id, (String) post.get("content"), (Comment[]) post.get("comments"), (User) post.get("author"));
+        return post == null ? null : new Post(id, (String) post.get("content"), (String) post.get("color"), (Comment[]) post.get("comments"), (User) post.get("author"));
     }
 
     public ArrayList<User> getUsersFromMongoDB() {
@@ -151,7 +151,7 @@ public class MongoManager {
         DBCursor cursor = postCollection.find();
         while (cursor.hasNext()) {
             DBObject postDBObject = cursor.next();
-            Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"));
+            Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),(Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"));
             posts.add(post);
         }
         return posts;
