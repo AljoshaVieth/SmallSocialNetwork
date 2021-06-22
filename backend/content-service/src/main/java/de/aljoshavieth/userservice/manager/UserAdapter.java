@@ -7,8 +7,6 @@ import com.mongodb.DBObject;
 public class UserAdapter {
     public static DBObject toDBObject(User user) {
         return new BasicDBObject("_id", user.getId())
-                .append("firstName", user.getFirstName())
-                .append("lastName", user.getLastName())
-                .append("email", user.getEmail());
+                .append("name", user.getName());
     }
 }

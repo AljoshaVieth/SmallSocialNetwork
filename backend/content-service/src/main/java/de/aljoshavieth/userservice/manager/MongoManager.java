@@ -95,11 +95,11 @@ public class MongoManager {
         if (object instanceof User) {
             User user = (User) object;
             userCollection.insert(UserAdapter.toDBObject(user));
-            logger.info("Inserted user " + user.getEmail() + " to " + userCollectionName);
+            logger.info("Inserted user " + user.getId() + " to " + userCollectionName);
         } else {
             Post post = (Post) object;
             postCollection.insert(PostAdapter.toDBObject(post));
-            logger.info("Inserted post from " + post.getAuthor().getEmail() + " with id= " + post.getId() + " into " + postCollectionName);
+            logger.info("Inserted post from " + post.getAuthor().getId() + " with id= " + post.getId() + " into " + postCollectionName);
         }
     }
 
@@ -125,7 +125,7 @@ public class MongoManager {
         DBObject query = new BasicDBObject("_id", id);
         DBCursor cursor = userCollection.find(query);
         DBObject user = cursor.one();
-        return user == null ? null : new User(id, (String) user.get("firstName"), (String) user.get("lastName"), (String) user.get("email"));
+        return user == null ? null : new User(id, (String) user.get("name"));
     }
 
     public Post getPostFromMongoDB(String id) {
@@ -140,7 +140,7 @@ public class MongoManager {
         DBCursor cursor = userCollection.find();
         while (cursor.hasNext()) {
             DBObject userDBObject = cursor.next();
-            User user = new User((String) userDBObject.get("_id"), (String) userDBObject.get("firstName"), (String) userDBObject.get("lastName"), (String) userDBObject.get("email"));
+            User user = new User((String) userDBObject.get("_id"), (String) userDBObject.get("name"));
             users.add(user);
         }
         return users;
