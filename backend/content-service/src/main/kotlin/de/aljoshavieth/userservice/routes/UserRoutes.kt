@@ -19,19 +19,17 @@ fun Route.userRouting() {
         get {
             val users = mongoManager.usersFromMongoDB;
             if (users.size < 1) {
-                call.respondText("No users found", status = HttpStatusCode.NotFound)
+                call.respond("{\"status\": failure, \"message\": \"No users found!\"}");
             } else {
                 call.respond(users)
             }
         }
         get("{id}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing or malformed id",
-                status = HttpStatusCode.BadRequest
-            )
+            val id = call.parameters["id"]
+                ?: return@get call.respond("{\"status\": failure, \"message\": \"Missing or malformed id!\"}")
             val user = mongoManager.getUserFromMongoDB(id);
             if (user == null) {
-                call.respondText("User not found", status = HttpStatusCode.NotFound)
+                call.respond("{\"status\": failure, \"message\": \"User not found!\"}");
             } else {
                 call.respond(user)
             }
@@ -42,20 +40,17 @@ fun Route.userRouting() {
                 val user = call.receive<User>()
                 val manager = MongoManager.getInstance();
                 manager.insertUserToMongoDB(user);
-                call.respondText("User stored correctly", status = HttpStatusCode.Created)
+                call.respond("{\"status\": success, \"message\": \"User stored correctly\"}");
             } catch (e: Exception) {
-                call.respondText(
-                    "User format is not valid, check your request body!",
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respond("{\"status\": failure, \"message\": \"User format is not valid, check your request body!\"}");
             }
         }
         delete("{id}") {
             val manager = MongoManager.getInstance();
             if (manager.removeUserFromMongoDB(call.parameters["id"])) {
-                call.respondText("User removed correctly", status = HttpStatusCode.Accepted)
+                call.respond("{\"status\": success, \"message\": \"User removed correctly\"}");
             } else {
-                call.respondText("User not found, hence cannot be deleted!", status = HttpStatusCode.NotFound)
+                call.respond("{\"status\": failure, \"message\": \"user not found, hence cannot be deleted!\"}");
             }
         }
     }

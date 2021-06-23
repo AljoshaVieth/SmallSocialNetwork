@@ -15,24 +15,23 @@ fun Application.registerPostRoutes() {
 }
 
 fun Route.postRouting() {
+
     val mongoManager = MongoManager.getInstance();
     route("/post") {
         get {
             val posts = mongoManager.postsFromMongoDB;
             if (posts.size < 1) {
-                call.respondText("No posts found", status = HttpStatusCode.NotFound)
+                call.respond("{\"status\": failure, \"message\": \"No post found!\"}");
             } else {
                 call.respond(posts)
             }
         }
         get("{id}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing or malformed id",
-                status = HttpStatusCode.BadRequest
-            )
+            val id = call.parameters["id"]
+                ?: return@get call.respond("{\"status\": failure, \"message\": \"Missing or malformed id!\"}");
             val post = mongoManager.getPostFromMongoDB(id);
             if (post == null) {
-                call.respondText("Post not found", status = HttpStatusCode.NotFound)
+                call.respond("{\"status\": failure, \"message\": \"Post not found!\"}");
             } else {
                 call.respond(post)
             }
@@ -43,20 +42,17 @@ fun Route.postRouting() {
                 val post = call.receive<Post>()
                 val manager = MongoManager.getInstance();
                 manager.insertPostToMongoDB(post);
-                call.respondText("Post stored correctly", status = HttpStatusCode.Created)
+                call.respond("{\"status\": success, \"message\": \"Post stored correctly\"}");
             } catch (e: Exception) {
-                call.respondText(
-                    "Post format is not valid, check your request body!",
-                    status = HttpStatusCode.BadRequest
-                )
+                call.respond("{\"status\": failure, \"message\": \"Post format is not valid, check your request body!\"}");
             }
         }
         delete("{id}") {
             val manager = MongoManager.getInstance();
             if (manager.removePostFromMongoDB(call.parameters["id"])) {
-                call.respondText("Post removed correctly", status = HttpStatusCode.Accepted)
+                call.respond("{\"status\": success, \"message\": \"Post removed correctly\"}");
             } else {
-                call.respondText("Post not found, hence cannot be deleted!", status = HttpStatusCode.NotFound)
+                call.respond("{\"status\": failure, \"message\": \"Post not found, hence cannot be deleted!\"}");
             }
         }
     }
