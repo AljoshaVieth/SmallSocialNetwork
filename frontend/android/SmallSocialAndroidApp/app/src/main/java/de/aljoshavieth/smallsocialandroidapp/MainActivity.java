@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -18,7 +20,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, SmallSocialNetworkApiService.ApiCallback {
+public class MainActivity extends AppCompatActivity implements SmallSocialNetworkApiService.ApiCallback {
     String apiBaseUrl;
     ListView postListView;
     static User user;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private PostListAdapter postAdapter;
     private SmallSocialNetworkApiService apiService;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -35,8 +38,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         apiService = new SmallSocialNetworkApiService(this);
         postListView = findViewById(R.id.postListView);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        progressBar = findViewById(R.id.progressBar);
         updateData();
         user = setUser();
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i("SmallSocialAndroidApp", "onRefresh called from SwipeRefreshLayout");
+
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        updateData();
+                    }
+                }
+        );
     }
 
     void populatePostListView() {
@@ -55,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
-    private void updateData(){
+    private void updateData() {
+        Log.i("SmallSocialAndroidApp", "--------------Updating...");
         apiService.getPosts(getString(R.string.apiBaseUrl) + "/post", this);
     }
 
@@ -99,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
 
     @Override
-    public void onErrorResponseReceived() {}
+    public void onErrorResponseReceived() {
+    }
 
     @Override
     public void onResponseReceived() {
@@ -111,10 +129,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         MainActivity.posts = posts;
         populatePostListView();
         swipeRefreshLayout.setRefreshing(false);
+        progressBar.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onRefresh() {
-        updateData();
-    }
+
 }
