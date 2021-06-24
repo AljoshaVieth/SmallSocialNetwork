@@ -54,6 +54,23 @@
 
         <View
             android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/white" />
+
+        <ImageButton
+            android:id="@+id/deletePostButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="deletePost"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textAlignment="viewEnd"
+            android:visibility="gone"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
+
+        <View
+            android:layout_width="match_parent"
             android:layout_height="4dp"
             android:background="@android:color/white" />
 

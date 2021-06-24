@@ -5,4 +5,5 @@
     <string name="create_post_button_text">create post</string>
     <string name="empty_content_error">You have to type something in order to submit something</string>
     <string name="post_submitted">Post submitted successfully</string>
+    <string name="post_deleted">Post deleted successfully</string>
 </resources>

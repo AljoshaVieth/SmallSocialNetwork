@@ -53,6 +53,36 @@ public class SmallSocialNetworkApiService {
         Log.e("SmallSocialAndroidApp", "The body content type: " + request.getBodyContentType());
     }
 
+    public void deletePost(String url, String postId, Context context) {
+        Log.i("SmallSocialAndroidApp", "Sending delete request to " + url);
+        JsonObjectRequest request = new JsonObjectRequest
+                (Request.Method.DELETE, url + "/" + postId, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("SmallSocialAndroidApp", "Received response: " + response);
+                        try {
+                            if (response.getString("status").equals("success")) {
+                                apiCallback.onResponseReceived();
+                            } else {
+                                apiCallback.onErrorResponseReceived();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            apiCallback.onErrorResponseReceived();
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        apiCallback.onErrorResponseReceived();
+                        Log.e("SmallSocialAndroidApp", "An error occured: " + error.getMessage());
+                    }
+                });
+        ApiHandler.getInstance(context).addToRequestQueue(request);
+        Log.e("SmallSocialAndroidApp", "The body content type: " + request.getBodyContentType());
+    }
+
     public void getPosts(String url, Context context) {
         JsonArrayRequest districtDataRequest = new JsonArrayRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
@@ -68,7 +98,7 @@ public class SmallSocialNetworkApiService {
                                 Post post = new Post(postJSON.getString("id"), postJSON.getString("content"), postJSON.getString("color"), new ArrayList<Comment>(), author, postJSON.getLong("time"));
                                 posts.put(post.getId(), post);
                             }
-                             apiCallback.onPostResponseReceived(posts);
+                            apiCallback.onPostResponseReceived(posts);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -87,7 +117,9 @@ public class SmallSocialNetworkApiService {
 
     public interface ApiCallback {
         void onErrorResponseReceived();
+
         void onResponseReceived();
+
         void onPostResponseReceived(TreeMap<String, Post> posts);
     }
 }
