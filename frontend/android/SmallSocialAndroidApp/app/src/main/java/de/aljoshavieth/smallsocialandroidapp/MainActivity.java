@@ -1,12 +1,19 @@
 package de.aljoshavieth.smallsocialandroidapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -112,6 +119,69 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
             editor.apply();
         }
         return new User(uuid, username);
+    }
+
+    // create an action bar button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
+        // If you don't have res/menu, just create a directory named "menu" inside res
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.preferencesButton) {
+            // do something here
+            Log.i("SmallSocialAndroidApp", "Preferences button pressed!");
+            showPreferencesDialog();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void showPreferencesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.settings);
+        // I'm using fragment here so I'm using getView() to provide ViewGroup
+        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.preferences_alert, null, false);
+        // Set up the textSizeInput
+        final EditText userNameInput;
+        userNameInput = viewInflated.findViewById(R.id.userNameInput);
+        userNameInput.setText(MainActivity.user.getName());
+        userNameInput.setSelection(userNameInput.length());
+        builder.setView(viewInflated);
+
+
+        // Set up the buttons
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                if (userNameInput.getText() != null && userNameInput.getText().length() > 0) {
+                    String newName = String.valueOf(userNameInput.getText());
+                    String userId = MainActivity.user.getId();
+                    MainActivity.user = new User(userId, newName);
+                    SharedPreferences sharedPref = getSharedPreferences(
+                            "smallsocialandroidapppreferences", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("username", newName);
+                    editor.apply();
+                    //TODO submit new name to REST API
+                }
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
 
