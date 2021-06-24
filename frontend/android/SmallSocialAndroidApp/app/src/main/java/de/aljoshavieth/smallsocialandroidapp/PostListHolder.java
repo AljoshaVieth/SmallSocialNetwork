@@ -9,7 +9,7 @@ public class PostListHolder {
     TextView postListTimeTextView;
 
     public PostListHolder(View v) {
-        postListTextView = v.findViewById(R.id.postListTextView);
+        postListTextView = v.findViewById(R.id.postListContentTextView);
         postListAuthorTextView = v.findViewById(R.id.postListAuthorTextView);
         postListTimeTextView = v.findViewById(R.id.postListTimeTextView);
 

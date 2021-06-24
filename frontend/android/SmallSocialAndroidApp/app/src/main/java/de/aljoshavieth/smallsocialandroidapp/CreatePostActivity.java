@@ -53,7 +53,6 @@ public class CreatePostActivity extends AppCompatActivity implements SmallSocial
         }
         long unixTime = System.currentTimeMillis() / 1000L;
         post = new Post(UUID.randomUUID().toString(), content, getColorAsString(currentBackgroundColor), new ArrayList<>(), MainActivity.user, unixTime);
-        //TODO submit post
         String url = getString(R.string.apiBaseUrl) + "/post";
         Gson gson = new Gson();
         try {

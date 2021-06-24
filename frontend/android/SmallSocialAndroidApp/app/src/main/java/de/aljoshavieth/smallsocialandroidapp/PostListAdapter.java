@@ -58,12 +58,8 @@ public class PostListAdapter extends BaseAdapter {
         holder.postListAuthorTextView.setText("@" + posts.get(position).getAuthor().getName());
         //java.util.Date date=new java.util.Date((long)posts.get(position).getTime()*1000);
 
-        Instant instant = Instant.ofEpochMilli(posts.get(position).getTime()*1000);
-        ZoneId zoneId = ZoneId.of("Europe/Berlin");
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, zoneId);
-        Locale locale = Locale.GERMANY;
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale);
-        String time = zdt.format(formatter);
+        String time = Utils.unixToFormattedTime(posts.get(position).getTime());
+
 
 
         //SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm", Locale.GERMAN);

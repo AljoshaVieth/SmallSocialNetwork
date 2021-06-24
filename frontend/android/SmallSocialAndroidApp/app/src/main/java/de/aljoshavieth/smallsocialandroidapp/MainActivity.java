@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,13 +18,14 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 
-public class MainActivity extends AppCompatActivity implements SmallSocialNetworkApiService.ApiCallback {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, SmallSocialNetworkApiService.ApiCallback {
     String apiBaseUrl;
     ListView postListView;
     static User user;
-    public TreeMap<String, Post> posts = new TreeMap<>();
+    public static TreeMap<String, Post> posts = new TreeMap<>();
     private PostListAdapter postAdapter;
     private SmallSocialNetworkApiService apiService;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Override
@@ -31,8 +33,9 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         apiService = new SmallSocialNetworkApiService(this);
-        apiService.getPosts(getString(R.string.apiBaseUrl) + "/post", this);
         postListView = findViewById(R.id.postListView);
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        updateData();
         user = setUser();
     }
 
@@ -50,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
                 openViewPostActivity(postId);
             }
         });
+    }
+
+    private void updateData(){
+        apiService.getPosts(getString(R.string.apiBaseUrl) + "/post", this);
     }
 
     @Override
@@ -101,7 +108,13 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
 
     @Override
     public void onPostResponseReceived(TreeMap<String, Post> posts) {
-        this.posts = posts;
+        MainActivity.posts = posts;
         populatePostListView();
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onRefresh() {
+        updateData();
     }
 }
