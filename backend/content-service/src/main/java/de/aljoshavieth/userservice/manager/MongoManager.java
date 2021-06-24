@@ -62,6 +62,7 @@ public class MongoManager {
         }
         userCollectionName = String.valueOf(properties.get("db.usercollectionname"));
         postCollectionName = String.valueOf(properties.get("db.postcollectionname"));
+        logger.info("Postcollectionname = " + postCollectionName);
         return success;
     }
 
@@ -84,6 +85,7 @@ public class MongoManager {
 
     // For better method naming...
     public void insertUserToMongoDB(User user) {
+        logger.info("insertUserToMongoDB---------------------");
         insertToMongoDB(user);
     }
 
@@ -92,13 +94,34 @@ public class MongoManager {
     }
 
     private void insertToMongoDB(ContentServiceModel object) {
+        logger.info("insertToMongoDB");
         if (object instanceof User) {
+            logger.info("object is a user!");
             User user = (User) object;
+            logger.info("cast successfully");
             userCollection.insert(UserAdapter.toDBObject(user));
+            logger.info("oh");
             logger.info("Inserted user " + user.getId() + " to " + userCollectionName);
         } else {
+            logger.info("object is not a user!");
             Post post = (Post) object;
-            postCollection.insert(PostAdapter.toDBObject(post));
+            logger.info("cast successfully");
+            DBObject dbObject = PostAdapter.toDBObject(post);
+            logger.info("dbobject created successfully");
+
+            logger.info("dbobject created " + dbObject.get("_id"));
+            //dbObject.keySet().forEach(k-> logger.info(k.toString()));
+            //dbObject.keySet().forEach(k-> logger.info(dbObject.get(k).toString()));
+            //logger.info(dbObject.get("comments").toString());
+            //dbObject.removeField("comments");
+            logger.info(dbObject.get("author").toString());
+            logger.info(dbObject.get("color").toString());
+            //dbObject.removeField("user");
+            dbObject.keySet().forEach(k -> logger.info(k.toString()));
+
+            WriteResult writeResult = postCollection.insert(dbObject);
+            logger.info("writeresult");
+            logger.info("Write result: " + writeResult.toString());
             logger.info("Inserted post from " + post.getAuthor().getId() + " with id= " + post.getId() + " into " + postCollectionName);
         }
     }
@@ -132,7 +155,7 @@ public class MongoManager {
         DBObject query = new BasicDBObject("_id", id);
         DBCursor cursor = postCollection.find(query);
         DBObject post = cursor.one();
-        return post == null ? null : new Post(id, (String) post.get("content"), (String) post.get("color"), (Comment[]) post.get("comments"), (User) post.get("author"));
+        return post == null ? null : new Post(id, (String) post.get("content"), (String) post.get("color"), (Comment[]) post.get("comments"), (User) post.get("author"), (long) post.get("time"));
     }
 
     public ArrayList<User> getUsersFromMongoDB() {
@@ -151,7 +174,9 @@ public class MongoManager {
         DBCursor cursor = postCollection.find();
         while (cursor.hasNext()) {
             DBObject postDBObject = cursor.next();
-            Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),(Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"));
+            //Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),(Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"), (long) postDBObject.get("time"));
+            //Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),new Comment[]{}, (User) postDBObject.get("author"), (long) postDBObject.get("time"));
+            Post post = PostAdapter.fromDBObject(postDBObject);
             posts.add(post);
         }
         return posts;
