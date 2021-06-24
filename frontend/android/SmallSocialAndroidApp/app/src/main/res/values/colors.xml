@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="electric_red">#F74B4B</color>
+    <color name="dark_orange">#FF9908</color>
+    <color name="canary_yellow">#FFB901</color>
+    <color name="la_salle_green">#42A960</color>
+    <color name="blue">#4078FF</color>
+    <color name="patriarch">#893197</color>
+
 </resources>
