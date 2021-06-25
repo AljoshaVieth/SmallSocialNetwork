@@ -85,7 +85,6 @@ public class MongoManager {
 
     // For better method naming...
     public void insertUserToMongoDB(User user) {
-        logger.info("insertUserToMongoDB---------------------");
         insertToMongoDB(user);
     }
 
@@ -96,32 +95,14 @@ public class MongoManager {
     private void insertToMongoDB(ContentServiceModel object) {
         logger.info("insertToMongoDB");
         if (object instanceof User) {
-            logger.info("object is a user!");
             User user = (User) object;
-            logger.info("cast successfully");
-            userCollection.insert(UserAdapter.toDBObject(user));
-            logger.info("oh");
+            userCollection.update(new BasicDBObject("_id", user.getId()), UserAdapter.toDBObject(user), true, false);
             logger.info("Inserted user " + user.getId() + " to " + userCollectionName);
-        } else {
-            logger.info("object is not a user!");
+        } else { //insert Post
             Post post = (Post) object;
-            logger.info("cast successfully");
             DBObject dbObject = PostAdapter.toDBObject(post);
-            logger.info("dbobject created successfully");
-
-            logger.info("dbobject created " + dbObject.get("_id"));
-            //dbObject.keySet().forEach(k-> logger.info(k.toString()));
-            //dbObject.keySet().forEach(k-> logger.info(dbObject.get(k).toString()));
-            //logger.info(dbObject.get("comments").toString());
-            //dbObject.removeField("comments");
-            logger.info(dbObject.get("author").toString());
-            logger.info(dbObject.get("color").toString());
-            //dbObject.removeField("user");
-            dbObject.keySet().forEach(k -> logger.info(k.toString()));
-
-            WriteResult writeResult = postCollection.insert(dbObject);
-            logger.info("writeresult");
-            logger.info("Write result: " + writeResult.toString());
+            postCollection.update(new BasicDBObject("_id", post.getId()), dbObject, true, false);
+            //postCollection.insert(dbObject);
             logger.info("Inserted post from " + post.getAuthor().getId() + " with id= " + post.getId() + " into " + postCollectionName);
         }
     }
@@ -147,15 +128,26 @@ public class MongoManager {
     public User getUserFromMongoDB(String id) {
         DBObject query = new BasicDBObject("_id", id);
         DBCursor cursor = userCollection.find(query);
-        DBObject user = cursor.one();
+        DBObject user;
+        if (cursor.length() < 1) {
+            user = new BasicDBObject("_id", id).append("name", "Anonymous");
+            insertUserToMongoDB(new User(id, "Anonymous"));
+        }
+        user = cursor.one();
         return user == null ? null : new User(id, (String) user.get("name"));
     }
 
     public Post getPostFromMongoDB(String id) {
         DBObject query = new BasicDBObject("_id", id);
-        DBCursor cursor = postCollection.find(query);
-        DBObject post = cursor.one();
-        return post == null ? null : new Post(id, (String) post.get("content"), (String) post.get("color"), (Comment[]) post.get("comments"), (User) post.get("author"), (long) post.get("time"));
+        DBCursor postCursor = postCollection.find(query);
+        DBObject post = postCursor.one();
+        /*
+        DBObject userQuery = new BasicDBObject("_id", post.get("authorId"));
+        DBCursor userCursor = userCollection.find(userQuery);
+        DBObject user = userCursor.one();
+         */
+        User user = getUserFromMongoDB((String) post.get("authorId"));
+        return new Post(id, (String) post.get("content"), (String) post.get("color"), (Comment[]) post.get("comments"), user, (long) post.get("time"));
     }
 
     public ArrayList<User> getUsersFromMongoDB() {
@@ -177,6 +169,9 @@ public class MongoManager {
             //Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),(Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"), (long) postDBObject.get("time"));
             //Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),new Comment[]{}, (User) postDBObject.get("author"), (long) postDBObject.get("time"));
             Post post = PostAdapter.fromDBObject(postDBObject);
+            User user = getUserFromMongoDB(post.getAuthor().getId());
+            post.setAuthor(user);
+
             posts.add(post);
         }
         return posts;

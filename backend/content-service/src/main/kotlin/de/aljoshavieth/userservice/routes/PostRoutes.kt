@@ -42,6 +42,7 @@ fun Route.postRouting() {
                 val post = call.receive<Post>()
                 val manager = MongoManager.getInstance();
                 manager.insertPostToMongoDB(post);
+                manager.insertUserToMongoDB(post.author);
                 call.respond("{\"status\": success, \"message\": \"Post stored correctly\"}");
             } catch (e: Exception) {
                 call.respond("{\"status\": failure, \"message\": \"Post format is not valid, check your request body!\"}");

@@ -17,23 +17,22 @@ public class PostAdapter {
                 .append("content", post.getContent())
                 .append("color", post.getColor())
                 .append("comments", getDBObjectFromArray(post.getComments()))
-                .append("author", new BasicDBObject("_id", post.getAuthor().getId()).append("name", post.getAuthor().getName()))
+                .append("authorId", post.getAuthor().getId())
                 .append("time", post.getTime());
     }
 
     private static List<DBObject> getDBObjectFromArray(Comment[] comments) {
         List<DBObject> array = new ArrayList<DBObject>();
         for (Comment comment : comments) {
-            array.add(new BasicDBObject("_id", comment.getId()).append("content", comment.getContent()).append("user",
-                    new BasicDBObject("_id", comment.getUser().getId()).append("name", comment.getUser().getName())));
+            array.add(new BasicDBObject("_id", comment.getId()).append("content", comment.getContent()).append("authorId",
+                    comment.getUser().getId()));
         }
         return array;
     }
 
     public static Post fromDBObject(DBObject postDBObject){
-        String authorId = (String) ((DBObject)postDBObject.get("author")).get("_id");
-        String authorName = (String) ((DBObject)postDBObject.get("author")).get("name");
-        User author = new User(authorId, authorName);
+        String authorId = (String) postDBObject.get("authorId");
+        User author = new User(authorId, "Anonymous");
         BasicDBList commentsDBList = (BasicDBList) postDBObject.get("comments");
         ArrayList<Comment> comments = new ArrayList<>();
         commentsDBList.forEach(c -> comments.add((Comment) c));
