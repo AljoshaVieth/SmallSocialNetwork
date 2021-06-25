@@ -20,6 +20,11 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,7 +33,6 @@ import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity implements SmallSocialNetworkApiService.ApiCallback {
-    String apiBaseUrl;
     ListView postListView;
     static User user;
     public static TreeMap<String, Post> posts = new TreeMap<>();
@@ -53,9 +57,6 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
                     @Override
                     public void onRefresh() {
                         Log.i("SmallSocialAndroidApp", "onRefresh called from SwipeRefreshLayout");
-
-                        // This method performs the actual data-refresh operation.
-                        // The method calls setRefreshing(false) when it's finished.
                         updateData();
                     }
                 }
@@ -124,8 +125,6 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
     // create an action bar button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
-        // If you don't have res/menu, just create a directory named "menu" inside res
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -136,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
         int id = item.getItemId();
 
         if (id == R.id.preferencesButton) {
-            // do something here
             Log.i("SmallSocialAndroidApp", "Preferences button pressed!");
             showPreferencesDialog();
         }
@@ -171,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("username", newName);
                     editor.apply();
-                    //TODO submit new name to REST API
+                    updateUser();
                 }
             }
         });
@@ -184,6 +182,16 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
         builder.show();
     }
 
+    private void updateUser(){
+        Gson gson = new Gson();
+        try {
+            JSONObject userAsJson = new JSONObject(gson.toJson(MainActivity.user));
+            apiService.submitData(getString(R.string.apiBaseUrl) + "/user", userAsJson, this);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onErrorResponseReceived() {
@@ -191,7 +199,8 @@ public class MainActivity extends AppCompatActivity implements SmallSocialNetwor
 
     @Override
     public void onResponseReceived() {
-
+        Log.i("SmallSocialAndroidApp", "User updated successfully");
+        updateData();
     }
 
     @Override
