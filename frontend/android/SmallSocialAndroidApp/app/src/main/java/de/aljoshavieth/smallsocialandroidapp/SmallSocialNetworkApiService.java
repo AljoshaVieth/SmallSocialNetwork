@@ -8,6 +8,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +97,16 @@ public class SmallSocialNetworkApiService {
                                 JSONObject postJSON = (JSONObject) response.get(i);
                                 JSONObject postAuthorJSON = (JSONObject) postJSON.get("author");
                                 User author = new User(postAuthorJSON.getString("id"), postAuthorJSON.getString("name"));
-                                Post post = new Post(postJSON.getString("id"), postJSON.getString("content"), postJSON.getString("color"), new ArrayList<Comment>(), author, postJSON.getLong("time"));
+                                ArrayList<Comment> comments = new ArrayList<>();
+                                JSONArray allCommentsJSON = (JSONArray) postJSON.get("comments");
+                                allCommentsJSON.length();
+                                for(int j = 0; j < allCommentsJSON.length(); j++){
+                                    JSONObject commentJSON = (JSONObject) allCommentsJSON.get(i);
+                                    JSONObject commentAuthorJSON = (JSONObject) commentJSON.get("author");
+                                    User commentAuthor = new User(commentAuthorJSON.getString("id"), commentAuthorJSON.getString("name"));
+                                    comments.add(new Comment(commentJSON.getString("id"), commentJSON.getString("content"), commentAuthor, commentJSON.getLong("time")));
+                                }
+                                Post post = new Post(postJSON.getString("id"), postJSON.getString("content"), postJSON.getString("color"), comments, author, postJSON.getLong("time"));
                                 posts.put(post.getId(), post);
                             }
                             apiCallback.onPostResponseReceived(posts);
