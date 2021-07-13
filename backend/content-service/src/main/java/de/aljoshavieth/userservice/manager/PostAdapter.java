@@ -25,7 +25,7 @@ public class PostAdapter {
         List<DBObject> array = new ArrayList<DBObject>();
         for (Comment comment : comments) {
             array.add(new BasicDBObject("_id", comment.getId()).append("content", comment.getContent()).append("authorId",
-                    comment.getUser().getId()));
+                    comment.getAuthor().getId()).append("time", comment.getTime()));
         }
         return array;
     }
@@ -35,9 +35,20 @@ public class PostAdapter {
         User author = new User(authorId, "Anonymous");
         BasicDBList commentsDBList = (BasicDBList) postDBObject.get("comments");
         ArrayList<Comment> comments = new ArrayList<>();
-        commentsDBList.forEach(c -> comments.add((Comment) c));
+        commentsDBList.forEach(c -> comments.add(getCommentFromObject(c)));
         Comment[] commentArray = new Comment[comments.size()];
         commentArray = comments.toArray(commentArray);
         return new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"), commentArray, author, (long) postDBObject.get("time"));
+    }
+
+    private static Comment getCommentFromObject(Object o){
+        BasicDBObject commentDBBObject = (BasicDBObject) o;
+        String id = (String) commentDBBObject.get("_id");
+        String content = (String) commentDBBObject.get("content");
+        String authorId = (String) commentDBBObject.get("authorId");
+        long time  = (long) commentDBBObject.get("time");
+        User author = new User(authorId, "Anonymous");
+        return new Comment(id, content, author, time);
+
     }
 }

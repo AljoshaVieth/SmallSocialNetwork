@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -166,12 +167,10 @@ public class MongoManager {
         DBCursor cursor = postCollection.find();
         while (cursor.hasNext()) {
             DBObject postDBObject = cursor.next();
-            //Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),(Comment[]) postDBObject.get("comments"), (User) postDBObject.get("author"), (long) postDBObject.get("time"));
-            //Post post = new Post((String) postDBObject.get("_id"), (String) postDBObject.get("content"), (String) postDBObject.get("color"),new Comment[]{}, (User) postDBObject.get("author"), (long) postDBObject.get("time"));
             Post post = PostAdapter.fromDBObject(postDBObject);
             User user = getUserFromMongoDB(post.getAuthor().getId());
             post.setAuthor(user);
-
+            Arrays.stream(post.getComments()).forEach(c -> c.setAuthor(getUserFromMongoDB(c.getAuthor().getId())));
             posts.add(post);
         }
         return posts;
