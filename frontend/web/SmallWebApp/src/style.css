@@ -1,9 +1,11 @@
-.profileimage {
-    width: 100%;
-    height: 100%;
-}
 H1 { text-align: center }
-button {
-    display: block;
-    margin-left: auto;
-    margin-right: auto }
+#post {
+    color: #FEE8E8;
+}
+.big-divider{
+    border-top: 8px solid #b3acac;
+    border-radius: 5px;
+}
+.getAppButton {
+    background: #00DAC5;
+}

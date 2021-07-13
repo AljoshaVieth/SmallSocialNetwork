@@ -1,47 +1,102 @@
 "use strict";
-class Person {
-    constructor(id, firstName, lastName, email) {
+class Post {
+    constructor(id, content, color, author, time, comments) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+        this.content = content;
+        this.color = color;
+        this.author = author;
+        this.time = time;
+        this.comments = comments;
     }
 }
-let totalButton = document.getElementById("showAllUsers");
-totalButton.addEventListener("click", () => displayPeople());
-async function loadPeople() {
-    let people = [];
-    let url = "http://localhost:8080/user";
+class PostComment {
+    constructor(id, content, author, time) {
+        this.id = id;
+        this.content = content;
+        this.author = author;
+        this.time = time;
+    }
+}
+class Author {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const id = urlParams.get('id');
+if (id != null && id.length == 36) {
+    displayPost();
+}
+async function loadPosts() {
+    let url = "http://localhost:8080/post/" + id;
     let response = await fetch(url);
-    let peopleBlueprints = JSON.parse(await response.text());
-    for (let i = 0; i < peopleBlueprints.length; i++) {
-        //Mapping json data to object. If numbers are used, cast to int with parseInt
-        let person = new Person(peopleBlueprints[i].id, peopleBlueprints[i].firstName, peopleBlueprints[i].lastName, peopleBlueprints[i].email);
-        people.push(person);
-    }
-    return people;
+    let postBlueprint = JSON.parse(await response.text());
+    let authorBlueprint = postBlueprint.author;
+    let author = new Author(authorBlueprint.id, authorBlueprint.name);
+    let postCommentBluePrints = postBlueprint.comments;
+    let postComments = [];
+    postCommentBluePrints.forEach(cbp => {
+        let postCommentAuthorBlueprint = cbp.author;
+        let postCommentAuthor = new Author(postCommentAuthorBlueprint.id, postCommentAuthorBlueprint.name);
+        postComments.push(new PostComment(cbp.id, cbp.content, postCommentAuthor, cbp.time));
+    });
+    //Mapping json data to object. If numbers are used, cast to int with parseInt
+    return new Post(postBlueprint.id, postBlueprint.content, postBlueprint.color, author, postBlueprint.time, postComments); //, postBlueprint.comments);
 }
-async function getEmailsOfUsersAsText() {
+async function getPost() {
     console.log("Get user emails....");
-    let people = await loadPeople();
+    let post = await loadPosts();
     let text = "<div class=\"flex one two-1000 three-1400 six-1600 demo center\">";
-    people.forEach(p => text += getProfileAsHtml(p) + "<br/>");
-    text = text + "</div>";
+    text += getPostAsHtml(post) + "<br/></div>";
     return text;
 }
-function displayPeople() {
+function displayPost() {
     // @ts-ignore
-    getEmailsOfUsersAsText().then(text => document.getElementById("users").innerHTML = text);
+    getPost().then(text => document.getElementById("post").innerHTML = text);
 }
-function getProfileAsHtml(person) {
-    return "<div>\n" +
-        "    <article class=\"card\">\n" +
-        "      <img class=\"profileimage\"src=\"https://source.unsplash.com/collection/2219444/600x600?" + person.id + "\">\n" +
-        "      <footer>\n" +
-        "        <h3>" + person.firstName + " " + person.lastName + "</h3>\n" +
-        "        <p>" + person.email + "</p>\n" +
-        "      </footer>\n" +
-        "    </article>\n" +
+function convertTime(unix) {
+    const date = new Date(unix * 1000);
+    let day = date.getDate();
+    let month = date.getMonth();
+    month = month + 1; // january is 0
+    let fullYear = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = "0" + date.getMinutes();
+    return day + "." + month + "." + fullYear + ", " + hours + ':' + minutes.substr(-2);
+}
+function getPostAsHtml(post) {
+    return "<div>" +
+        "    <article class=\"card\" style='background-color: " + post.color + "'>" +
+        "      <footer>" +
+        "        <h6 style=\"text-align:left;\">" +
+        "@" + post.author.name +
+        "         <span style=\"float:right;\">" +
+        convertTime(post.time) +
+        "          </span>" +
+        "         </h6>" +
+        "        <p>" + post.content + "</p>" +
+        "      </footer>" +
+        getCommentsAsHtml(post) +
+        "    </article>" +
         "  </div>";
+}
+function getCommentsAsHtml(post) {
+    let commentsHtml = "";
+    post.comments.forEach(postComment => {
+        commentsHtml += "<hr class=\"big-divider\"><div>" +
+            "      <footer>" +
+            "        <h6 style=\"text-align:left;\">" +
+            "@" + postComment.author.name +
+            "         <span style=\"float:right;\">" +
+            convertTime(postComment.time) +
+            "          </span>" +
+            "         </h6>" +
+            "        <p>" + postComment.content + "</p>" +
+            "      </footer>" +
+            "  </div>";
+    });
+    return commentsHtml;
 }
 //# sourceMappingURL=index.js.map
