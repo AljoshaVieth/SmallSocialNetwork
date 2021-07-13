@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SmallSocialAndroidApp</string>
     <string name="apiBaseUrl">http://10.0.2.2:8080</string>
+    <string name="webAppBaseUrl">https://smallsocialnetworkapp.aljoshavieth.de</string>
     <string name="create_post_text_hint"><i>Your text here</i></string>
     <string name="create_comment_text_hint"><i>Your comment here</i></string>
     <string name="create_post_button_text">create post</string>
@@ -10,4 +11,5 @@
     <string name="settings">Change your Name</string>
     <string name="your_name_hint">Your name</string>
     <string name="delete_post_button_content_description">Delete this post</string>
+    <string name="share_post_button_content_description">Share this post</string>
 </resources>

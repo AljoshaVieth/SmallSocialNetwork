@@ -107,6 +107,17 @@ public class ViewPostActivity extends AppCompatActivity implements SmallSocialNe
         }
     }
 
+    public void sharePost(View view) {
+        String shareUrl = getString(R.string.webAppBaseUrl) + "/share/" + post.getId();
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareUrl);
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
+    }
+
     void addComment(String content) {
         ArrayList<Comment> comments = post.getComments();
         long unixTime = System.currentTimeMillis() / 1000L;
