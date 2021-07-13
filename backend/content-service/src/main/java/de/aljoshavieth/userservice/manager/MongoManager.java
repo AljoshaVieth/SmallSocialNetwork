@@ -141,14 +141,12 @@ public class MongoManager {
     public Post getPostFromMongoDB(String id) {
         DBObject query = new BasicDBObject("_id", id);
         DBCursor postCursor = postCollection.find(query);
-        DBObject post = postCursor.one();
-        /*
-        DBObject userQuery = new BasicDBObject("_id", post.get("authorId"));
-        DBCursor userCursor = userCollection.find(userQuery);
-        DBObject user = userCursor.one();
-         */
-        User user = getUserFromMongoDB((String) post.get("authorId"));
-        return new Post(id, (String) post.get("content"), (String) post.get("color"), (Comment[]) post.get("comments"), user, (long) post.get("time"));
+        DBObject postDBObject = postCursor.one();
+        Post post = PostAdapter.fromDBObject(postDBObject);
+        User user = getUserFromMongoDB(post.getAuthor().getId());
+        post.setAuthor(user);
+        Arrays.stream(post.getComments()).forEach(c -> c.setAuthor(getUserFromMongoDB(c.getAuthor().getId())));
+        return post;
     }
 
     public ArrayList<User> getUsersFromMongoDB() {
