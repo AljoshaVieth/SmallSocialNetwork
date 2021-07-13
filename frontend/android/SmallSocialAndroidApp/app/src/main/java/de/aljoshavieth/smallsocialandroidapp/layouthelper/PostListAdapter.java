@@ -1,4 +1,4 @@
-package de.aljoshavieth.smallsocialandroidapp;
+package de.aljoshavieth.smallsocialandroidapp.layouthelper;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -7,14 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Locale;
+
+import de.aljoshavieth.smallsocialandroidapp.models.Post;
+import de.aljoshavieth.smallsocialandroidapp.R;
+import de.aljoshavieth.smallsocialandroidapp.Utils;
 
 public class PostListAdapter extends BaseAdapter {
     Context context;
@@ -56,15 +53,7 @@ public class PostListAdapter extends BaseAdapter {
         PostListHolder holder = new PostListHolder(convertView);
         holder.postListTextView.setText(posts.get(position).getContent());
         holder.postListAuthorTextView.setText("@" + posts.get(position).getAuthor().getName());
-        //java.util.Date date=new java.util.Date((long)posts.get(position).getTime()*1000);
-
         String time = Utils.unixToFormattedTime(posts.get(position).getTime());
-
-
-
-        //SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm", Locale.GERMAN);
-        //String time = dt.format(date);
-
         holder.postListTimeTextView.setText(time);
         holder.postListTextView.getRootView().setBackgroundColor(Color.parseColor(posts.get(position).getColor()));
         return convertView;

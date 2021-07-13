@@ -1,4 +1,4 @@
-package de.aljoshavieth.smallsocialandroidapp;
+package de.aljoshavieth.smallsocialandroidapp.api;
 
 import android.content.Context;
 

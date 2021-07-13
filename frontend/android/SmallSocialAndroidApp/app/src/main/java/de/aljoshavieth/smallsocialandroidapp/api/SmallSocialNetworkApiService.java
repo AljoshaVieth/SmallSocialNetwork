@@ -1,4 +1,4 @@
-package de.aljoshavieth.smallsocialandroidapp;
+package de.aljoshavieth.smallsocialandroidapp.api;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,8 +8,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +15,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
+
+import de.aljoshavieth.smallsocialandroidapp.models.Comment;
+import de.aljoshavieth.smallsocialandroidapp.models.Post;
+import de.aljoshavieth.smallsocialandroidapp.models.User;
 
 public class SmallSocialNetworkApiService {
     private final ApiCallback apiCallback;
@@ -101,7 +103,7 @@ public class SmallSocialNetworkApiService {
                                 JSONArray allCommentsJSON = (JSONArray) postJSON.get("comments");
                                 allCommentsJSON.length();
                                 for(int j = 0; j < allCommentsJSON.length(); j++){
-                                    JSONObject commentJSON = (JSONObject) allCommentsJSON.get(i);
+                                    JSONObject commentJSON = (JSONObject) allCommentsJSON.get(j);
                                     JSONObject commentAuthorJSON = (JSONObject) commentJSON.get("author");
                                     User commentAuthor = new User(commentAuthorJSON.getString("id"), commentAuthorJSON.getString("name"));
                                     comments.add(new Comment(commentJSON.getString("id"), commentJSON.getString("content"), commentAuthor, commentJSON.getLong("time")));

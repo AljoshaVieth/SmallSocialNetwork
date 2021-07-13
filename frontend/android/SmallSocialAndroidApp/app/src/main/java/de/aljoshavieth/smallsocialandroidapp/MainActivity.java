@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -30,6 +29,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.UUID;
+
+import de.aljoshavieth.smallsocialandroidapp.api.SmallSocialNetworkApiService;
+import de.aljoshavieth.smallsocialandroidapp.layouthelper.PostListAdapter;
+import de.aljoshavieth.smallsocialandroidapp.models.Post;
+import de.aljoshavieth.smallsocialandroidapp.models.User;
 
 
 public class MainActivity extends AppCompatActivity implements SmallSocialNetworkApiService.ApiCallback {

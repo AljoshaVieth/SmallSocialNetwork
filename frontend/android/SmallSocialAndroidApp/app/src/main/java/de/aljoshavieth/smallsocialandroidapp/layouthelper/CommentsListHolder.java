@@ -1,7 +1,9 @@
-package de.aljoshavieth.smallsocialandroidapp;
+package de.aljoshavieth.smallsocialandroidapp.layouthelper;
 
 import android.view.View;
 import android.widget.TextView;
+
+import de.aljoshavieth.smallsocialandroidapp.R;
 
 public class CommentsListHolder {
     TextView commentsListTextView;

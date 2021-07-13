@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmallSocialAndroidApp"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ViewPostActivity"></activity>
+        <activity
+            android:name=".ViewPostActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".CreatePostActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

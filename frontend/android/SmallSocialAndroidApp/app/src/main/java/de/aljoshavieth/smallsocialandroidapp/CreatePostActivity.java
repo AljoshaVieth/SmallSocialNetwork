@@ -22,6 +22,9 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import de.aljoshavieth.smallsocialandroidapp.api.SmallSocialNetworkApiService;
+import de.aljoshavieth.smallsocialandroidapp.models.Post;
+
 public class CreatePostActivity extends AppCompatActivity implements SmallSocialNetworkApiService.ApiCallback {
 
     private ArrayList<Integer> backgroundColors;
@@ -57,6 +60,7 @@ public class CreatePostActivity extends AppCompatActivity implements SmallSocial
         Gson gson = new Gson();
         try {
             JSONObject postAsJson = new JSONObject(gson.toJson(post));
+            Log.i("SmallSocialAndroidApp", "-----------------------------------------------Post As Json: " + postAsJson);
             apiService.submitData(url, postAsJson, this);
         } catch (JSONException e) {
             e.printStackTrace();

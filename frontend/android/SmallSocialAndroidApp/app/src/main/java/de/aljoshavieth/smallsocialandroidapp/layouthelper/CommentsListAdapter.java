@@ -1,6 +1,7 @@
-package de.aljoshavieth.smallsocialandroidapp;
+package de.aljoshavieth.smallsocialandroidapp.layouthelper;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +9,20 @@ import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
 
+import de.aljoshavieth.smallsocialandroidapp.models.Comment;
+import de.aljoshavieth.smallsocialandroidapp.R;
+import de.aljoshavieth.smallsocialandroidapp.Utils;
+
 public class CommentsListAdapter extends BaseAdapter {
     Context context;
     ArrayList<Comment> comments;
     LayoutInflater inflater;
+    private String backgroundColor;
 
-    public CommentsListAdapter(Context c, ArrayList<Comment> comments) {
+    public CommentsListAdapter(Context c, ArrayList<Comment> comments, String backgroundColor) {
         this.context = c;
         this.comments = comments;
+        this.backgroundColor = backgroundColor;
     }
 
     @Override
@@ -50,6 +57,8 @@ public class CommentsListAdapter extends BaseAdapter {
 
         String time = Utils.unixToFormattedTime(comments.get(position).getTime());
         holder.commentsListTimeTextView.setText(time);
+        holder.commentsListTextView.getRootView().setBackgroundColor(Color.parseColor(backgroundColor));
+
         return convertView;
     }
 
