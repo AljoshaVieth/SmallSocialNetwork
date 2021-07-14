@@ -4,9 +4,9 @@ plugins {
     id 'application'
 }
 wrapper { gradleVersion = '6.0' }
+mainClassName = 'de.aljoshavieth.userservice.ApplicationKt'
 
-
-group 'com.jetbrains.handson'
+group 'de.aljoshavieth.smallsocialnetwork'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -27,9 +27,18 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
-
-
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+}
+application {
+    mainClassName = 'de.aljoshavieth.userservice.ApplicationKt'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 compileKotlin {
@@ -39,6 +48,3 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-application {
-    mainClassName = 'de.aljoshavieth.userservice.ApplicationKt'
-}

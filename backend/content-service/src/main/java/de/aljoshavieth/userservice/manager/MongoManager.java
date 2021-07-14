@@ -4,6 +4,7 @@ import com.mongodb.*;
 import de.aljoshavieth.userservice.models.*;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -53,7 +54,7 @@ public class MongoManager {
         properties = new Properties();
         BufferedInputStream stream;
         try {
-            stream = new BufferedInputStream(new FileInputStream("config.properties"));
+            stream = new BufferedInputStream(new FileInputStream("config/config.properties"));
             properties.load(stream);
             stream.close();
             success = true;
