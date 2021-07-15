@@ -88,7 +88,7 @@ public class SmallSocialNetworkApiService {
     }
 
     public void getPosts(String url, Context context) {
-        JsonArrayRequest districtDataRequest = new JsonArrayRequest
+        JsonArrayRequest request = new JsonArrayRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
 
                     @Override
@@ -115,17 +115,17 @@ public class SmallSocialNetworkApiService {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Log.i("CoronaDataApp", "Response received");
+                        Log.i("SmallSocialAndroidApp", "Response received");
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("CoronaDataApp", "An error occured: " + error.getMessage());
+                        Log.e("SmallSocialAndroidApp", "An error occured: " + error.getMessage());
                     }
                 });
-        Log.i("CoronaDataApp", "Adding to queue");
-        ApiHandler.getInstance(context).addToRequestQueue(districtDataRequest);
+        Log.i("SmallSocialAndroidApp", "Adding to queue");
+        ApiHandler.getInstance(context).addToRequestQueue(request);
     }
 
     public interface ApiCallback {
