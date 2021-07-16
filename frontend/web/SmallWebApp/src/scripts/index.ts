@@ -90,7 +90,7 @@ async function loadPosts(): Promise<Post> {
 
 
 async function getPost(): Promise<string> {
-    console.log("Get user emails....");
+    console.log("Get posts....");
     let post: Post = await loadPosts();
     let text: string = "<div class=\"flex one two-1000 three-1400 six-1600 demo center\">";
     text += getPostAsHtml(post) + "<br/></div>"
