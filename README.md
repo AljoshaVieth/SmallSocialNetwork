@@ -18,3 +18,8 @@ The code is created during a course of my Computer Science in Media studies at F
 The Android-App should be easy to run in Android Studio. The Microservice has it´s own README with information on how to build and run it. 
 
 
+
+https://user-images.githubusercontent.com/12802765/126003068-ad3f4890-62ac-4bcb-accb-dc7f3b1b5516.mp4
+
+
+
