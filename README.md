@@ -15,8 +15,6 @@ The code is created during a course of my Computer Science in Media studies at F
 * TypeScript
 * HTML & CSS
 
-Gradually, the code will get extended. All progress will get documented in the [**wiki**](../../wiki)
- in a kind of blog form.
-The end result should be a functioning prototype, but nothing more.
+The Android-App should be easy to run in Android Studio. The Microservice has it´s own README with information on how to build and run it. 
 
 
